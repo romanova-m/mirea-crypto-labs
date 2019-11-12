@@ -4,4 +4,5 @@ include 'lab2'
 include 'test'
 include 'lab3'
 include 'lab4'
+include 'lab5'
 

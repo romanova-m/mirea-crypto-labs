@@ -89,6 +89,7 @@ public class ProbablePrime {
         return sequence;
     }
 
+
     private ArrayList<Integer> generateSequence(int startNum, int finishNum) {
         ArrayList<Integer> array = new ArrayList<>();
         for (int i = startNum; i < finishNum; i++) {
@@ -96,6 +97,7 @@ public class ProbablePrime {
         }
         return array;
     }
+
 
     // If passes test returns probablePrime, else null
     private BigInteger rabinMillerTests(BigInteger candidate) {
@@ -114,9 +116,11 @@ public class ProbablePrime {
         return candidate;
     }
 
+
     private BigInteger countN(BigInteger candidate) {
         return new BigInteger(candidate.bitCount() - 1, new Random()).add(BigInteger.valueOf(1));
     }
+
 
     // returns true if passes test
     private boolean rabinMillerTest(BigInteger n, int s, BigInteger d, BigInteger a) {
@@ -131,6 +135,7 @@ public class ProbablePrime {
         return false;
     }
 
+
     private int countS(BigInteger candidate) {
         int s = 0;
         for (BigInteger num = candidate.subtract(BigInteger.ONE);
@@ -141,10 +146,12 @@ public class ProbablePrime {
         return s;
     }
 
+
     private BigInteger countD(BigInteger candidate, int s) {
         return candidate.subtract(BigInteger.ONE).divide(
                 BigInteger.valueOf((long) Math.pow(2, s)));
     }
+
 
     // If passes test returns probablePrime, else null
     private BigInteger checkPrimesDiv(BigInteger number) {
@@ -155,6 +162,7 @@ public class ProbablePrime {
         return number;
     }
 
+
     /*
      * Increase probability of being prime.
      * First and last bit of probablePrime are set to 1.
@@ -162,6 +170,7 @@ public class ProbablePrime {
     private BigInteger modify(BigInteger number) {
         return number.setBit(0).setBit(bitLength - 1);
     }
+
 
     private BigInteger generateRandom(int bits) {
         return new BigInteger(bits, new Random());
