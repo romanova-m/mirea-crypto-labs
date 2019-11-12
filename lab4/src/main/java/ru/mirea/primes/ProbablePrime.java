@@ -2,6 +2,7 @@ package ru.mirea.primes;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -18,12 +19,18 @@ import java.util.logging.Logger;
 public class ProbablePrime {
 
     private static final int RABIN_MILLER_TESTS_NUM = 5;
-    private static final int SMALL_PRIMES_MAX = 2000;
+    private static final int SMALL_PRIMES_MAX = 20000; // generates 2262 primes
+    private static final int MAX_PRIMITIVE_ROOT = 5;
     // for debugging
     private static final Logger logger = Logger.getLogger(ProbablePrime.class.getName());
     private BigInteger probablePrime;
     private int bitLength;
-    private ArrayList<Integer> smallPrimes = generateSmallPrimes();
+
+    public static ArrayList<Integer> getSmallPrimes() {
+        return smallPrimes;
+    }
+
+    private static ArrayList<Integer> smallPrimes = generateSmallPrimes();
 
 
     private ProbablePrime(int bitLength) {
@@ -65,12 +72,12 @@ public class ProbablePrime {
 
 
     /* Прогоняем алгоритм эратосфена на числах от 2 до SMALL_PRIMES_MAX */
-    private ArrayList<Integer> generateSmallPrimes() {
+    private static ArrayList<Integer> generateSmallPrimes() {
         return filterNonPrimes(generateSequence(2, SMALL_PRIMES_MAX));
     }
 
 
-    private ArrayList<Integer> filterNonPrimes(ArrayList<Integer> sequence) {
+    private static ArrayList<Integer> filterNonPrimes(ArrayList<Integer> sequence) {
         int currIndex = 0;
         Integer current = sequence.get(currIndex);
         Integer maxElem = SMALL_PRIMES_MAX;
@@ -89,8 +96,13 @@ public class ProbablePrime {
         return sequence;
     }
 
-
-    private ArrayList<Integer> generateSequence(int startNum, int finishNum) {
+    /**
+     * genererates sequence by incrementing {@code startNum} to finishNum (not included)
+     * @param startNum sequence first element
+     * @param finishNum sequence last element, not included
+     * @return ordered sequence
+     */
+    public static ArrayList<Integer> generateSequence(int startNum, int finishNum) {
         ArrayList<Integer> array = new ArrayList<>();
         for (int i = startNum; i < finishNum; i++) {
             array.add(i);
@@ -133,6 +145,25 @@ public class ProbablePrime {
             if (x.equals(n.subtract(BigInteger.ONE))) return true;
         }
         return false;
+    }
+
+    // p should be <= int
+    public static int primitiveRoot(BigInteger p) {
+        ArrayList<Integer> primes = ProbablePrime.getSmallPrimes();
+        for (int i = 0; i < Math.min(primes.size(), MAX_PRIMITIVE_ROOT); i++) {
+            if (isPrimitiveRoot(BigInteger.valueOf(primes.get(i)), p))
+                return primes.get(i);
+        }
+        return  -1;
+    }
+
+
+    public static boolean isPrimitiveRoot(BigInteger g, BigInteger p) {
+        BigInteger sum = BigInteger.ZERO;
+        for (int i = 0; i < p.intValue() - 1; i++){
+            sum = sum.add(g.modPow(BigInteger.valueOf(i),p));
+        }
+        return sum.equals(BigInteger.valueOf((long)((p.intValue() - 1)*((double)p.intValue()/2))));
     }
 
 
