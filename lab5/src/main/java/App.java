@@ -5,7 +5,7 @@ public class App {
         sort(array, 1, 10);
     }
 
-    private static void sort(int[] array, int minVal, int maxVal) {
+    public static void sort(int[] array, int minVal, int maxVal) {
         int[] temp = new int[maxVal - minVal + 1];
         for (int elem : array) {
             temp[elem - minVal]++;
