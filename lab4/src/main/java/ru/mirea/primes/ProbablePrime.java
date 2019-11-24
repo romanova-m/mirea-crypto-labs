@@ -21,7 +21,6 @@ public class ProbablePrime {
     private static final int RABIN_MILLER_TESTS_NUM = 5;
     private static final int SMALL_PRIMES_MAX = 20000; // generates 2262 primes
     private static final int MAX_PRIMITIVE_ROOT = 5;
-    // for debugging
     private static final Logger logger = Logger.getLogger(ProbablePrime.class.getName());
     private BigInteger probablePrime;
     private int bitLength;
@@ -38,7 +37,7 @@ public class ProbablePrime {
         do {
             probablePrime = rabinMillerTests(checkPrimesDiv(modify(generateRandom(bitLength))));
         } while (probablePrime == null);
-        logger.info("PROBABLE PRIME = " + probablePrime);
+        logger.info("Finished generating probable prime. Result value = " + probablePrime);
     }
 
 
@@ -116,15 +115,18 @@ public class ProbablePrime {
         if (candidate == null) return null;
         if (candidate.compareTo(BigInteger.valueOf(2)) <= 0) return candidate;
 
+        logger.info("Started rabin miller tests on number: " + candidate);
         // count s and d: (pow(2,s)*d) == (candidate - 1)
         int s = countS(candidate);
         BigInteger d = countD(candidate, s);
-        logger.info(candidate + " s " + s + " d " + d);
 
         for (int i = 0; i < RABIN_MILLER_TESTS_NUM; i++) {
-            if (!rabinMillerTest(candidate, s, d, countN(candidate)))
+            if (!rabinMillerTest(candidate, s, d, countN(candidate))) {
+                logger.info("RM test fail on number " + candidate);
                 return null;
+            }
         }
+        logger.info("RM test passed on number " + candidate);
         return candidate;
     }
 

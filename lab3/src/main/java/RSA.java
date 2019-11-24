@@ -8,7 +8,7 @@ public class RSA {
     BigInteger e; // Public exponent
     BigInteger d; //Private exponent
     final int PRIME_LEN = 32;
-    final BigInteger MIN_VAL_FOR_COPRIME = BigInteger.valueOf(1024);
+    final BigInteger MIN_VAL_FOR_COPRIME = BigInteger.valueOf(2048);
     BigInteger n;
     private Logger logger = Logger.getLogger(RSA.class.getName());
 
@@ -18,32 +18,35 @@ public class RSA {
         n = p.multiply(q);
         BigInteger eulerFunc = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
         e = coprime(eulerFunc, MIN_VAL_FOR_COPRIME);
-        d = mmInverse(e, eulerFunc);
+        d = inverse(e, eulerFunc);
         logger.info("RSA init ended with params: " +
-            "n = " + n + ", e = " + e + ", d = " + d);
+            "n = " + n + ", e = " + e + ", d = " + d + ", euler func: " + eulerFunc);
     }
 
     // d⋅e ≡ 1 (mod λ(n))
-    // mmInverse * a = 1 (mod b)
-    private BigInteger mmInverse(BigInteger a, BigInteger b) {
-        BigInteger x = BigInteger.ZERO;
-        BigInteger lastx = BigInteger.ONE;
-        BigInteger y = BigInteger.ONE;
-        BigInteger lasty = BigInteger.ZERO;
-        while (!b.equals(BigInteger.ZERO))
+    // inverse * a ≡ 1 (mod n)
+    private BigInteger inverse(BigInteger a, BigInteger n) {
+        BigInteger t = BigInteger.ZERO;
+        BigInteger r = new BigInteger(n.toString());
+        BigInteger newt = BigInteger.ONE;
+        BigInteger newr = new BigInteger(a.toString());
+        while (!newr.equals(BigInteger.ZERO))
         {
-            BigInteger[] quotientAndRemainder = a.divideAndRemainder(b);
-            BigInteger quotient = quotientAndRemainder[0];
-            a = b;
-            b = quotientAndRemainder[1];
-            BigInteger temp = x;
-            x = lastx.subtract(quotient.multiply(x));
-            lastx = temp;
-            temp = y;
-            y = lasty.subtract(quotient.multiply(y));
-            lasty = temp;
+            BigInteger quotient = r.divide(newr);
+            BigInteger temp = t;
+            t = newt;
+            newt = temp.subtract(quotient.multiply(newt));
+            temp = r;
+            r = newr;
+            newr = temp.subtract(quotient.multiply(newr));
         }
-        return a;
+        if (r.compareTo(BigInteger.ONE) > 0) {
+            logger.severe(a + " IS NOT INVERTIBLE");
+            return null;
+        }
+        if (t.compareTo(BigInteger.ZERO) <= 0)
+            t = t.add(n);
+        return t;
     }
 
     private BigInteger coprime(BigInteger toNumber, BigInteger minValue) {
